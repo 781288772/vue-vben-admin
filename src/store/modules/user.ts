@@ -146,7 +146,8 @@ export const useUserStore = defineStore({
     async logout(goLogin = false) {
       if (this.getToken) {
         try {
-          await doLogout();
+          // await doLogout();
+
         } catch {
           console.log('注销Token失败');
         }
