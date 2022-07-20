@@ -96,17 +96,18 @@ export const useUserStore = defineStore({
 
         // save token
         this.setToken(token);
-        return this.afterLoginAction(goHome);
+        return this.afterLoginAction(loginParams,goHome);
       } catch (error) {
         console.log('login error', error);
         return Promise.reject(error);
       }
     },
-    async afterLoginAction(goHome?: boolean): Promise<GetUserInfoModel | null> {
+    async afterLoginAction(loginParams,goHome?: boolean): Promise<GetUserInfoModel | null> {
       if (!this.getToken) return null;
       // get user info
-      // const userInfo = await this.getUserInfoAction();
-      const userInfo = {};
+      const userInfo = await this.getUserInfoAction(loginParams);
+      console.log('userInfo',userInfo)
+      // const userInfo = {};
 
       const sessionTimeout = this.sessionTimeout;
       if (sessionTimeout) {
@@ -125,9 +126,9 @@ export const useUserStore = defineStore({
       }
       return userInfo;
     },
-    async getUserInfoAction(): Promise<UserInfo | null> {
+    async getUserInfoAction(loginParams): Promise<UserInfo | null> {
       if (!this.getToken) return null;
-      const userInfo = await getUserInfo();
+      const userInfo = await getUserInfo(loginParams.username);
       const { roles = [] } = userInfo;
       if (isArray(roles)) {
         const roleList = roles.map((item) => item.value) as RoleEnum[];
