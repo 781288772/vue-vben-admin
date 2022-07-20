@@ -16,7 +16,7 @@ export const mainOutRoutes: AppRouteModule[] = [
       title: 'MainOut',
       ignoreAuth: true,
     },
-  },
+  }
 ];
 
 export const mainOutRouteNames = mainOutRoutes.map((item) => item.name);
