@@ -1,135 +1,90 @@
 <template>
-  <PageWrapper :class="prefixCls" title="搜索列表">
-    <template #headerContent>
-      <BasicForm
-        :class="`${prefixCls}__header-form`"
-        :labelWidth="100"
-        :schemas="schemas"
-        :showActionButtonGroup="false"
-      />
+  <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
+    <template #footer>
+      <div>
+        <b>ant design vue</b>
+        footer part
+      </div>
     </template>
-
-    <div :class="`${prefixCls}__container`">
-      <a-list>
-        <template v-for="item in list" :key="item.id">
-          <a-list-item>
-            <a-list-item-meta>
-              <template #description>
-                <div :class="`${prefixCls}__content`">
-                  {{ item.content }}
-                </div>
-                <div :class="`${prefixCls}__action`">
-                  <template v-for="action in actions" :key="action.icon">
-                    <div :class="`${prefixCls}__action-item`">
-                      <Icon
-                        v-if="action.icon"
-                        :class="`${prefixCls}__action-icon`"
-                        :icon="action.icon"
-                        :color="action.color"
-                      />
-                      {{ action.text }}
-                    </div>
-                  </template>
-                  <span :class="`${prefixCls}__time`">{{ item.time }}</span>
-                </div>
-              </template>
-              <template #title>
-                <p :class="`${prefixCls}__title`">
-                  {{ item.title }}
-                </p>
-                <div>
-                  <template v-for="tag in item.description" :key="tag">
-                    <Tag class="mb-2">
-                      {{ tag }}
-                    </Tag>
-                  </template>
-                </div>
-              </template>
-            </a-list-item-meta>
-          </a-list-item>
+    <template #renderItem="{ item }">
+      <a-list-item key="item.title">
+        <template #actions>
+          <span v-for="{ type, text } in actions" :key="type">
+            <component :is="type" style="margin-right: 8px" />
+            {{ text }}
+          </span>
         </template>
-      </a-list>
-    </div>
-  </PageWrapper>
+        <template #extra>
+          <img
+            width="272"
+            alt="logo"
+            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+          />
+        </template>
+        <a-list-item-meta :description="item.description">
+          <template #title>
+            <a :href="item.href">{{ item.title }}</a>
+          </template>
+          <template #avatar><a-avatar :src="item.avatar" /></template>
+        </a-list-item-meta>
+        {{ item.content }}
+      </a-list-item>
+    </template>
+  </a-list>
 </template>
-<script lang="ts">
-  import { Tag } from 'ant-design-vue';
-  import { defineComponent } from 'vue';
-  import Icon from '/@/components/Icon/index';
-  import { BasicForm } from '/@/components/Form/index';
-  import { actions, searchList, schemas } from '/@/views/demo/page/list/search/data';
-  import { PageWrapper } from '/@/components/Page';
-  import { List } from 'ant-design-vue';
+<script lang="ts" setup>
+import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import { defineComponent } from 'vue';
 
-  export default defineComponent({
-    components: {
-      Icon,
-      Tag,
-      BasicForm,
-      PageWrapper,
-      [List.name]: List,
-      [List.Item.name]: List.Item,
-      AListItemMeta: List.Item.Meta,
-    },
-    setup() {
-      return {
-        prefixCls: 'list-search',
-        list: searchList,
-        actions,
-        schemas,
-      };
-    },
+const listData: Record<string, string>[] = [];
+
+for (let i = 0; i < 23; i++) {
+  listData.push({
+    href: 'https://www.antdv.com/',
+    title: `ant design vue part ${i}`,
+    avatar: 'https://joeschmoe.io/api/v1/random',
+    description:
+      'Ant Design, a design language for background applications, is refined by Ant UED Team.',
+    content:
+      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
   });
+}
+   const pagination = {
+      onChange: (page: number) => {
+        console.log(page);
+      },
+      pageSize: 3,
+    };
+    const actions: Record<string, string>[] = [
+      { type: 'StarOutlined', text: '156' },
+      { type: 'LikeOutlined', text: '156' },
+      { type: 'MessageOutlined', text: '2' },
+    ];
+
+// export default defineComponent({
+//   components: {
+//     StarOutlined,
+//     LikeOutlined,
+//     MessageOutlined,
+//   },
+//   setup() {
+//     const pagination = {
+//       onChange: (page: number) => {
+//         console.log(page);
+//       },
+//       pageSize: 3,
+//     };
+//     const actions: Record<string, string>[] = [
+//       { type: 'StarOutlined', text: '156' },
+//       { type: 'LikeOutlined', text: '156' },
+//       { type: 'MessageOutlined', text: '2' },
+//     ];
+//     return {
+//       listData,
+//       pagination,
+//       actions,
+//     };
+//   },
+// });
 </script>
-<style lang="less" scoped>
-  .list-search {
-    &__header {
-      &-form {
-        margin-bottom: -16px;
-      }
-    }
 
-    &__container {
-      padding: 12px;
-      background-color: @component-background;
-    }
-
-    &__title {
-      margin-bottom: 12px;
-      font-size: 18px;
-    }
-
-    &__content {
-      color: @text-color-secondary;
-    }
-
-    &__action {
-      margin-top: 10px;
-
-      &-item {
-        display: inline-block;
-        padding: 0 16px;
-        color: @text-color-secondary;
-
-        &:nth-child(1) {
-          padding-left: 0;
-        }
-
-        &:nth-child(1),
-        &:nth-child(2) {
-          border-right: 1px solid @border-color-base;
-        }
-      }
-
-      &-icon {
-        margin-right: 3px;
-      }
-    }
-
-    &__time {
-      position: absolute;
-      right: 20px;
-      color: rgb(0 0 0 / 45%);
-    }
-  }
-</style>
