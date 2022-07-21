@@ -34,7 +34,15 @@
 </template>
 
 <script lang="ts" setup>
+import { defHttp } from '/@/utils/http/axios';
 
+defHttp.get({
+  url: '/gold/list',
+  params: {
+    current: 1,
+    size: 10,
+  },
+});
 
 
 const listData: Record<string, string>[] = [];
