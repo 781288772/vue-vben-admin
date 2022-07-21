@@ -32,9 +32,10 @@
     </template>
   </a-list>
 </template>
+
 <script lang="ts" setup>
-import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
-import { defineComponent } from 'vue';
+
+
 
 const listData: Record<string, string>[] = [];
 
@@ -87,4 +88,14 @@ for (let i = 0; i < 23; i++) {
 //   },
 // });
 </script>
-
+<script lang="ts">
+import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import { defineComponent } from 'vue';
+export default defineComponent({
+  components: {
+    StarOutlined,
+    LikeOutlined,
+    MessageOutlined,
+  },
+  })
+</script>
