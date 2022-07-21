@@ -14,6 +14,7 @@ import projectSetting from '/@/settings/projectSetting';
 import { PermissionModeEnum } from '/@/enums/appEnum';
 
 import { asyncRoutes } from '/@/router/routes';
+console.log('asyncRoutes',asyncRoutes)
 import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 
 import { filter } from '/@/utils/helper/treeHelper';
@@ -42,7 +43,8 @@ interface PermissionState {
 }
 
 export const usePermissionStore = defineStore({
-  id: 'app-permission',
+  id: 'app-permission', 
+  persist: true,
   state: (): PermissionState => ({
     // 权限代码列表
     permCodeList: [],
@@ -182,10 +184,12 @@ export const usePermissionStore = defineStore({
 
         // 路由映射， 默认进入该case
         case PermissionModeEnum.ROUTE_MAPPING:
+          console.log('asyncRoutes22222',asyncRoutes)
           // 对非一级路由进行过滤
           routes = filter(asyncRoutes, routeFilter);
           // 对一级路由再次根据角色权限过滤
           routes = routes.filter(routeFilter);
+         
           // 将路由转换成菜单
           const menuList = transformRouteToMenu(routes, true);
           // 移除掉 ignoreRoute: true 的路由 非一级路由

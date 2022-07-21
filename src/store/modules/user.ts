@@ -27,6 +27,20 @@ interface UserState {
 
 export const useUserStore = defineStore({
   id: 'app-user',
+  persist: {
+    enabled: true,
+    // 自定义持久化参数
+    strategies: [
+        {
+            // 自定义key
+            key: 'app-user',
+            // 自定义存储方式，默认sessionStorage
+            storage: localStorage,
+            // 指定要持久化的数据，默认所有 state 都会进行缓存，可以通过 paths 指定要持久化的字段，其他的则不会进行持久化。
+            paths: [],
+        }
+    ]
+},
   state: (): UserState => ({
     // user info
     userInfo: null,

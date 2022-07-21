@@ -68,6 +68,10 @@ export const getMenus = async (): Promise<Menu[]> => {
     const routes = router.getRoutes();
     return filter(menus, basicFilter(routes));
   }
+  // console.log('router',router)
+  // const permissionStore = usePermissionStore();
+  // console.log('permissionStore.getFrontMenuList',permissionStore.getFrontMenuList)
+  // console.log('menus',menus)
   return menus;
 };
 

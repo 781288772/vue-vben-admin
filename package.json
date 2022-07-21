@@ -56,6 +56,8 @@
     "nprogress": "^0.2.0",
     "path-to-regexp": "^6.2.0",
     "pinia": "2.0.12",
+    "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^1.6.3",
     "print-js": "^1.6.0",
     "qrcode": "^1.5.0",
     "qs": "^6.10.3",
