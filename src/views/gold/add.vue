@@ -12,14 +12,26 @@
     <a-form-item :name="['gold', 'name']" label="名称" :rules="[{ required: true }]">
       <a-input v-model:value="formState.gold.name" />
     </a-form-item>
-    <a-form-item :name="['gold', 'weight']" label="重量" :rules="[{ type: 'email' }]">
+    <a-form-item :name="['gold', 'weight']" label="重量" :rules="[{ required: true }]">
       <a-input v-model:value="formState.gold.weight" />
     </a-form-item>
-    <a-form-item :name="['gold', 'type']" label="类型" :rules="[{ type: 'number', min: 0, max: 99 }]">
-      <a-input-number v-model:value="formState.gold.type" />
+    <a-form-item :name="['gold', 'type']" label="类型" :rules="[{ required: true }]">
+  
+          <a-select
+      ref="select"
+      v-model:value="formState.gold.type"
+      style="width: 120px"
+    >
+      <a-select-option value="戒指">戒指</a-select-option>
+      <a-select-option value="手链">手链</a-select-option>
+      <a-select-option value="耳环" >耳环</a-select-option>
+       <a-select-option value="手镯" >手镯</a-select-option>
+      <a-select-option value="其它">其它</a-select-option>
+    </a-select>
+   
     </a-form-item>
-    <a-form-item :name="['gold', 'unit_price']" label="单价">
-      <a-input v-model:value="formState.gold.unit_price" />
+    <a-form-item :name="['gold', 'unitPrice']" label="单价" :rules="[{ required: true }]">
+      <a-input v-model:value="formState.gold.unitPrice" />
     </a-form-item>
     <a-form-item :name="['gold', 'img']" label="图片">
        <a-upload
@@ -31,7 +43,7 @@
     action="/api/upload/doAdd"
     :before-upload="beforeUpload"
     @change="handleChange"
-    @validate=""
+     @finishFailed="onFinishFailed"
    
   >
     <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
@@ -45,9 +57,9 @@
      <a-form-item :name="['gold', 'description']" label="描述">
       <a-textarea v-model:value="formState.gold.description" />
     </a-form-item>
-    <!-- <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
+    <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 2 }">
       <a-button type="primary" html-type="submit">提交</a-button>
-    </a-form-item> -->
+    </a-form-item>
   </a-form>
 </div>
 
@@ -57,13 +69,14 @@ import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { ref } from 'vue';
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
-import {  reactive,defineExpose } from 'vue';
+import {  reactive,defineExpose,defineEmits } from 'vue';
 // function getBase64(img: Blob, callback: (base64Url: string) => void) {
 //   const reader = new FileReader();
 //   reader.addEventListener('load', () => callback(reader.result as string));
 //   reader.readAsDataURL(img);
 // }
 const form = ref(null);
+const emit = defineEmits(['finish']);
 
     const layout = {
       labelCol: { span: 8 },
@@ -118,34 +131,29 @@ const form = ref(null);
         name: '',
         weight:'',
         type:'',
-        unit_price:'',
+        unitPrice:'',
         img:'',
         description:'',
       },
     });
     const onFinish = (values: any) => {
-      console.log('Success:', values);
+      // console.log('Success:', values);
+      if(values.gold){
+        // console.log('可请求')
+        emit("finish",values.gold);
+        
+      }
+    };
+     const onFinishFailed = (errorInfo: any) => {
+      console.log('Failed:', errorInfo);
     };
     const onSubmit = (values: any) => {
       console.log('Success:', values);
     };
-    const onValidate = () =>{
-     form.value.validate(valid=>{
-      console.log(valid)
-      if(valid){
-       return Promise.resolve(valid);
-      }else{
-        return Promise.reject(valid);
-      }
-    
-     
-     })
-
-    }
+  
     defineExpose({
       onSubmit,
-      onFinish,
-      onValidate
+      onFinish
     })
 
  

@@ -36,7 +36,10 @@
   </a-list>
    <a-modal v-model:visible="state.detailVisible" title="Gold Info" @ok="handleOk">
       <info :goldInfo="state.goldInfo" v-if="state.dialogType=='info'"></info>
-      <add  v-if="state.dialogType=='add'" ref="addForm" ></add>
+    
+    </a-modal>
+       <a-modal v-model:visible="state.addVisible" title="Gold Info" @ok="addOk" :footer="state.showFooter">
+      <add  ref="addForm" @finish="formFinish" ></add>
     </a-modal>
  
 </template>
@@ -52,27 +55,51 @@ let listData: Record<string, string>[] = reactive([]);
 const addForm = ref(null)
 
 const state = reactive({
+  showFooter:{show:true},
   current:1,
   id:'',
   goldInfo:{},
+  addVisible:false,
   detailVisible:false,
   dialogType:'',
 })
 onMounted(async()=>{
   
-  try{
+  list();
+});
+
+const addOk = ()=>{
+
+}
+const list = async()=>{
+    try{
     const list = await getList();
     listData.push(...list.list);
   }catch(e){
     console.log(e)
   };
-});
-
+}
 const addBtnClick = ()=>{
   state.dialogType='add';
-  state.detailVisible = true;
+  state.addVisible = true;
 }
+const formFinish = async(data:any)=>{
+  // console.log(data)
+ const res = await create(data)
+ if(res.success){
+    message.success('添加成功')
+    state.addVisible = false;
+    list();
+ }else{
+    message.error(res.message)
+ }
+ console.log(res)
+  // state.addVisible = false;
 
+}
+const  create = async (data)=>{
+ return await defHttp.post({url: '/gold/create',params: data},{errorMessageMode: 'modal'})
+}
 const handleOk = ()=>{
   console.log(addForm.value)
   // addForm?.value?.onSubmit();
