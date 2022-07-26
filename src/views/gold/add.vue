@@ -69,14 +69,41 @@ import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { ref } from 'vue';
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
-import {  reactive,defineExpose,defineEmits } from 'vue';
-// function getBase64(img: Blob, callback: (base64Url: string) => void) {
-//   const reader = new FileReader();
-//   reader.addEventListener('load', () => callback(reader.result as string));
-//   reader.readAsDataURL(img);
-// }
+import {  reactive,defineExpose,defineEmits,defineProps,onMounted,toRef} from 'vue';
 const form = ref(null);
 const emit = defineEmits(['finish']);
+const props = defineProps<{
+  type,
+  goldInfo,
+}>()
+
+
+    const formState = reactive({
+      gold: {
+        id:'',
+        name: '',
+        weight:0,
+        type:'',
+        unitPrice:0,
+        img:'',
+        description:'',
+      },
+    });
+    if(props.type=='edit'){
+    console.log(props.goldInfo)
+     formState.gold = {
+        id:'',
+        name: '',
+        weight:0,
+        type:'',
+        unitPrice:0,
+        img:'',
+        description:'',
+      };
+    formState.gold = toRef(props,'goldInfo'); 
+    console.log(' formState.gold', formState.gold) 
+  
+  }
 
     const layout = {
       labelCol: { span: 8 },
@@ -96,7 +123,7 @@ const emit = defineEmits(['finish']);
     const fileList = ref([]);
     const loading = ref<boolean>(false);
     const imageUrl = ref<string>('');
-
+ 
     const handleChange = (info: UploadChangeParam) => {
       if (info.file.status === 'uploading') {
         loading.value = true;
@@ -126,16 +153,8 @@ const emit = defineEmits(['finish']);
       }
       return isJpgOrPng && isLt2M;
     };
-    const formState = reactive({
-      gold: {
-        name: '',
-        weight:'',
-        type:'',
-        unitPrice:'',
-        img:'',
-        description:'',
-      },
-    });
+
+
     const onFinish = (values: any) => {
       // console.log('Success:', values);
       if(values.gold){

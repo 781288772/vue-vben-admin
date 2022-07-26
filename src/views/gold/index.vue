@@ -39,7 +39,7 @@
     
     </a-modal>
        <a-modal v-model:visible="state.addVisible" title="Gold Info" @ok="addOk" :footer="state.showFooter">
-      <add  ref="addForm" @finish="formFinish" ></add>
+      <add  ref="addForm" @finish="formFinish" :type="state.addFormType" v-model:goldInfo="state.goldInfo" ></add>
     </a-modal>
  
 </template>
@@ -47,7 +47,7 @@
 <script lang="ts" setup>
 import { defHttp } from '/@/utils/http/axios';
 import { message } from 'ant-design-vue';
-import {reactive,onMounted,ref} from "vue";
+import {reactive,onMounted,ref,} from "vue";
 import info from "./info.vue";
 import add from "./add.vue";
 
@@ -55,10 +55,13 @@ let listData: Record<string, string>[] = reactive([]);
 const addForm = ref(null)
 
 const state = reactive({
+  addFormType:'add',
   showFooter:{show:true},
   current:1,
   id:'',
-  goldInfo:{},
+  goldInfo:{
+    id:undefined,
+  },
   addVisible:false,
   detailVisible:false,
   dialogType:'',
@@ -73,6 +76,7 @@ const addOk = ()=>{
 }
 const list = async()=>{
     try{
+      listData.length = 0;
     const list = await getList();
     listData.push(...list.list);
   }catch(e){
@@ -80,25 +84,42 @@ const list = async()=>{
   };
 }
 const addBtnClick = ()=>{
-  state.dialogType='add';
+  state.addFormType='add';
   state.addVisible = true;
 }
 const formFinish = async(data:any)=>{
   // console.log(data)
- const res = await create(data)
- if(res.success){
+  if(state.addFormType=='add'){
+    const res = await create(data)
+     if(res.success){
     message.success('添加成功')
     state.addVisible = false;
+     
     list();
  }else{
     message.error(res.message)
  }
- console.log(res)
-  // state.addVisible = false;
-
+  }else{
+    let editData = {
+      id:state.goldInfo?.id,
+      ...data
+    }
+    const res = await update(editData)
+     if(res.success){
+    message.success('修改成功')
+    state.addVisible = false;
+     
+    list();
+ }else{
+    message.error(res.message)
+ }
+  }
 }
 const  create = async (data)=>{
  return await defHttp.post({url: '/gold/create',params: data},{errorMessageMode: 'modal'})
+}
+const  update = async (data)=>{
+ return await defHttp.post({url: '/gold/update',params: data},{errorMessageMode: 'modal'})
 }
 const handleOk = ()=>{
   console.log(addForm.value)
@@ -113,6 +134,9 @@ const handleOk = ()=>{
  const  getDetails = async(id:number)=>{
     return await defHttp.get({url: '/gold/detail',params: {id}},{errorMessageMode: 'modal'})
   }
+   const  remove = async(id:number)=>{
+    return await defHttp.post({url: `/gold/remove?id=${id}`,params: {id}},{errorMessageMode: 'modal'})
+  }
    const operations = (type,e)=>{
    switch(type){
     case'EyeOutlined':
@@ -125,10 +149,26 @@ const handleOk = ()=>{
        });
       break;
     case'EditOutlined':
-      message.success('编辑');
+      // message.success('编辑');
+     
+      state.addFormType = 'edit';
+       getDetails(e.id).then(res=>{
+        console.log(res)
+        state.goldInfo = res;
+         state.addVisible = true;
+       });
       break;
     case'DeleteOutlined':
       message.success('删除');
+      remove(e.id).then(res=>{
+        if(res.success){
+          message.success('删除成功')
+          
+          list();
+        }else{
+          message.error(res.message)
+        }
+      });
       break;
   }
 
