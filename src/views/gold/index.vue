@@ -140,7 +140,7 @@ const handleOk = ()=>{
    const operations = (type,e)=>{
    switch(type){
     case'EyeOutlined':
-      message.success('查看');
+      // message.success('查看');
       state.detailVisible = true;
       state.dialogType = 'info';
        getDetails(e.id).then(res=>{
@@ -159,7 +159,7 @@ const handleOk = ()=>{
        });
       break;
     case'DeleteOutlined':
-      message.success('删除');
+      // message.success('删除');
       remove(e.id).then(res=>{
         if(res.success){
           message.success('删除成功')

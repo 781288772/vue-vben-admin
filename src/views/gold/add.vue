@@ -46,7 +46,7 @@
      @finishFailed="onFinishFailed"
    
   >
-    <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+    <img v-if="formState.gold.img" :src="imgUrl+formState.gold.img" alt="img" />
     <div v-else>
       <loading-outlined v-if="loading"></loading-outlined>
       <plus-outlined v-else></plus-outlined>
@@ -77,7 +77,12 @@ const props = defineProps<{
   goldInfo,
 }>()
 
-
+  
+    const fileList = ref([]);
+    const loading = ref<boolean>(false);
+    const imageUrl = ref<string>('');
+    const imgUrl = import.meta.env.VITE_IMGURL
+ 
     const formState = reactive({
       gold: {
         id:'',
@@ -91,6 +96,7 @@ const props = defineProps<{
     });
     if(props.type=='edit'){
     console.log(props.goldInfo)
+  
      formState.gold = {
         id:'',
         name: '',
@@ -101,6 +107,8 @@ const props = defineProps<{
         description:'',
       };
     formState.gold = toRef(props,'goldInfo'); 
+    imageUrl.value = formState.gold.img;
+    
     console.log(' formState.gold', formState.gold) 
   
   }
@@ -120,9 +128,7 @@ const props = defineProps<{
         range: '${label} must be between ${min} and ${max}',
       },
     };
-    const fileList = ref([]);
-    const loading = ref<boolean>(false);
-    const imageUrl = ref<string>('');
+    
  
     const handleChange = (info: UploadChangeParam) => {
       if (info.file.status === 'uploading') {
@@ -134,7 +140,9 @@ const props = defineProps<{
         // Get this url from response in real world.
 
         console.log('info',info)
+        imageUrl.value = info.file.response.url;
         formState.gold.img = info.file.response.url;
+        message.success('上传成功')
       }
       if (info.file.status === 'error') {
         loading.value = false;
